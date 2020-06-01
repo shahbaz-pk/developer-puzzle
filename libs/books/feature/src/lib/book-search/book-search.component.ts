@@ -6,7 +6,6 @@ import {
   getAllBooks,
   ReadingListBook,
   searchBooks,
-  removeFromReadingList,
   getBooksError
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
@@ -21,6 +20,7 @@ import { Subscription } from 'rxjs';
 export class BookSearchComponent implements OnInit, OnDestroy {
   books: ReadingListBook[];
   errorStatus: Boolean = false;
+
   getAllBookSubscriber: Subscription;
   getBooksErrorSubscriber: Subscription;
 

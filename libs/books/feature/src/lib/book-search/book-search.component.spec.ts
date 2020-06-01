@@ -68,8 +68,9 @@ describe('ProductsListComponent', () => {
     it('should Add to reading list', () => {
       const book = createBook('A');
       component.addBookToReadingList(book);
-
       expect(mockStore.dispatch).toHaveBeenCalledWith(addToReadingList({book}));
+    });
+
     });
 
     it('should return undefined', () => {
@@ -82,5 +83,4 @@ describe('ProductsListComponent', () => {
       const result = component.formatDate('11-06-2020');
      expect(result).toEqual('11/6/2020');
     });
-  });
 });

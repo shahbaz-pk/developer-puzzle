@@ -11,6 +11,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TotalCountComponent } from './total-count/total-count.component';
 import { ReadingListComponent } from './reading-list/reading-list.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 const EXPORTS = [
   BookSearchComponent,
@@ -26,6 +27,7 @@ const EXPORTS = [
     MatIconModule,
     MatInputModule,
     MatSnackBarModule,
+    MatButtonToggleModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule.forChild([

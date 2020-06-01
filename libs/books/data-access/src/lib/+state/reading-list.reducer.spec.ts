@@ -86,8 +86,28 @@ describe('Reading list Reducer', () => {
       const result: State = reducer(state, action);
       expect(result.ids).to.eql(['A', 'B', 'C']);
     });
-  });
 
+    it('confirmedMarkAsReadingComplete should mark book status to completed', () => {
+      const itemToUpdateStauts = createReadingListItem('A');
+      itemToUpdateStauts.finished = true;
+      itemToUpdateStauts.finishedDate = new Date().toISOString();
+      const action = ReadingListActions.confirmedMarkAsReadingComplete({
+        item: itemToUpdateStauts
+      });
+      const result: State = reducer(state, action);
+      expect(result.entities['A']['finished']).to.eqls(true);
+    });
+
+    it('failedMarkAsReadingComplete should fail to mark book status to completed', () => {
+      const itemToUpdateStauts = createReadingListItem('B');
+      const action = ReadingListActions.failedMarkAsReadingComplete({
+        item: itemToUpdateStauts
+      });
+      const result: State = reducer(state, action);
+      expect(result.entities['B']['finished']).to.be.undefined;
+    });
+
+  });
   describe('unknown action', () => {
     it('should return the previous state', () => {
       const action = {} as any;
