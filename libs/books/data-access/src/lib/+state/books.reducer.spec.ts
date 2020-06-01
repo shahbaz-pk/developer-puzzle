@@ -13,6 +13,12 @@ describe('Books Reducer', () => {
       expect(result.loaded).toBe(true);
       expect(result.ids.length).toBe(3);
     });
+    it('loadBooksFailure should return set the empty list', () => {
+      const action = BooksActions.searchBooksFailure({ error: new Error()});
+      const result: State = reducer(initialState, action);
+
+      expect(result.ids.length).toBe(0);
+    });
   });
 
   describe('unknown action', () => {
@@ -22,6 +28,13 @@ describe('Books Reducer', () => {
       const result = reducer(initialState, action);
 
       expect(result).toBe(initialState);
+    });
+  });
+  describe('clearSearch actions', () => {
+    it('clearSearch should return empty list', () => {
+      const action = BooksActions.clearSearch();
+      const result: State = reducer(initialState, action);
+      expect(result.ids.length).toBe(0);
     });
   });
 });

@@ -36,6 +36,7 @@
               color="primary"
               (click)="addBookToReadingList(b)"
               [disabled]="b.isAdded"
+              [attr.aria-label]="'Add ' + b.title + ' to the reading list'"
             >
               Want to Read
             </button>
@@ -45,6 +46,9 @@
     </div>
   </div>
 </ng-container>
+<div *ngIf="errorStatus && searchTerm">
+  No result found
+</div>
 <ng-template #empty>
   <div class="empty">
     <p>

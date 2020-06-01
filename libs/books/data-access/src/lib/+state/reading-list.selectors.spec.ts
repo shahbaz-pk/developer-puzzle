@@ -34,7 +34,7 @@ describe('ReadingList Selectors', () => {
     };
   });
 
-  describe('Books Selectors', () => {
+  describe('Reading list Selectors', () => {
     it('getReadingList() should return the list of Books', () => {
       const results = ToReadSelectors.getReadingList(state);
 
@@ -46,6 +46,10 @@ describe('ReadingList Selectors', () => {
       const result = ToReadSelectors.getTotalUnread(state);
 
       expect(result).toBe(3);
+    });
+    it("getAllBooks() should return books list with status", () => {
+      const results = ToReadSelectors.getAllBooks(state);
+      expect(results.map(x => x.isAdded)).toEqual([true, true, true]);
     });
   });
 });

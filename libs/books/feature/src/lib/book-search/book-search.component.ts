@@ -1,22 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   addToReadingList,
   clearSearch,
   getAllBooks,
   ReadingListBook,
-  searchBooks
+  searchBooks,
+  removeFromReadingList,
+  getBooksError
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'tmo-book-search',
   templateUrl: './book-search.component.html',
   styleUrls: ['./book-search.component.scss']
 })
-export class BookSearchComponent implements OnInit {
+export class BookSearchComponent implements OnInit, OnDestroy {
   books: ReadingListBook[];
+  errorStatus: Boolean = false;
+  getAllBookSubscriber: Subscription;
+  getBooksErrorSubscriber: Subscription;
 
   searchForm = this.fb.group({
     term: ''
@@ -32,8 +38,15 @@ export class BookSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.select(getAllBooks).subscribe(books => {
+    this.getAllBookSubscriber = this.store.select(getAllBooks).subscribe(books => {
       this.books = books;
+    });
+
+    this.getBooksErrorSubscriber = this.store.select(getBooksError).subscribe(errorInfo => {
+      if (errorInfo) {
+        this.errorStatus = true;
+        this.store.dispatch(clearSearch());
+      }
     });
   }
 
@@ -57,6 +70,15 @@ export class BookSearchComponent implements OnInit {
       this.store.dispatch(searchBooks({ term: this.searchTerm }));
     } else {
       this.store.dispatch(clearSearch());
+    }
+  }
+
+  ngOnDestroy() {
+    if(this.getAllBookSubscriber){
+      this.getAllBookSubscriber.unsubscribe();
+    }
+    if(this.getBooksErrorSubscriber){
+      this.getBooksErrorSubscriber.unsubscribe();
     }
   }
 }

@@ -8,7 +8,7 @@ import {
 } from './reading-list.reducer';
 import { createBook, createReadingListItem } from '@tmo/shared/testing';
 
-describe('Books Reducer', () => {
+describe('Reading list Reducer', () => {
   describe('valid Books actions', () => {
     let state: State;
 
@@ -17,6 +17,15 @@ describe('Books Reducer', () => {
         [createReadingListItem('A'), createReadingListItem('B')],
         initialState
       );
+    });
+
+    it('loadReadingList Initial values', () => {
+      const action = ReadingListActions.loadReadingList();
+
+      const result: State = reducer(initialState, action);
+
+      expect(result.loaded).to.be.false;
+      expect(result.ids.length).to.eq(0);
     });
 
     it('loadBooksSuccess should load books from reading list', () => {
@@ -33,13 +42,40 @@ describe('Books Reducer', () => {
       expect(result.ids.length).to.eq(3);
     });
 
-    it('failedAddToReadingList should undo book addition to the state', () => {
-      const action = ReadingListActions.failedAddToReadingList({
-        book: createBook('B')
+    it('loadBooksError should fail to load books from reading list', () => {
+      const list = [
+        createReadingListItem('A'),
+        createReadingListItem('B'),
+        createReadingListItem('C')
+      ];
+      const action = ReadingListActions.loadReadingListError(new ErrorEvent(""));
+
+      const result: State = reducer(initialState, action);
+
+      expect(result.loaded).to.be.false;
+      expect(result.ids.length).to.eq(0);
+    });
+
+    it('addToReadingList should add book to the state', () => {
+      const action = ReadingListActions.addToReadingList({
+        book: createBook('C')
       });
-
       const result: State = reducer(state, action);
+      expect(result.ids).to.eql(['A', 'B', 'C']);
+    });
 
+    it('failedAddToReadingList should undo book removal from the state', () => {
+      const action = ReadingListActions.failedAddToReadingList({
+        book: createBook('C')
+      });
+      const result: State = reducer(state, action);
+      expect(result.ids).to.eql(['A', 'B']);
+    });
+
+    it('removeFromReadingList should undo book addition to the state', () => {
+      const itemToRemove = createReadingListItem('B');
+      const action = ReadingListActions.removeFromReadingList({ item: itemToRemove });
+      const result: State = reducer(state, action);
       expect(result.ids).to.eql(['A']);
     });
 
@@ -47,9 +83,7 @@ describe('Books Reducer', () => {
       const action = ReadingListActions.failedRemoveFromReadingList({
         item: createReadingListItem('C')
       });
-
       const result: State = reducer(state, action);
-
       expect(result.ids).to.eql(['A', 'B', 'C']);
     });
   });
