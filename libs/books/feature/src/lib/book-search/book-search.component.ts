@@ -6,11 +6,11 @@ import {
   getAllBooks,
   ReadingListBook,
   searchBooks,
-  removeFromReadingList,
   getBooksError
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
 export class BookSearchComponent implements OnInit, OnDestroy {
   books: ReadingListBook[];
   errorStatus: Boolean = false;
+  dynamicSubscriber: Subscription;
   getAllBookSubscriber: Subscription;
   getBooksErrorSubscriber: Subscription;
 
@@ -48,6 +49,11 @@ export class BookSearchComponent implements OnInit, OnDestroy {
         this.store.dispatch(clearSearch());
       }
     });
+
+  this.dynamicSubscriber = this.searchForm.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(val => { this.searchBooks(); })
   }
 
   formatDate(date: void | string) {
@@ -74,6 +80,9 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if(this.dynamicSubscriber){
+      this.dynamicSubscriber.unsubscribe();
+    }
     if(this.getAllBookSubscriber){
       this.getAllBookSubscriber.unsubscribe();
     }

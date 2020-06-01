@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedTestingModule, createBook } from '@tmo/shared/testing';
 
@@ -43,6 +43,12 @@ describe('ProductsListComponent', () => {
       expect(component.books.length).toBe(1);
     });
 
+    it('should dispatch selector on Search query', fakeAsync(() => {
+      component.searchForm.controls.term.setValue('java');
+      tick(500);
+      expect(mockStore.dispatch).toHaveBeenCalled();
+    }));
+
     it('Should load books error on search query', () => {
       component.searchForm.controls.term.setValue('javascript');
       mockStore.overrideSelector(getBooksError, "Internal Server error");
@@ -68,7 +74,6 @@ describe('ProductsListComponent', () => {
     it('should Add to reading list', () => {
       const book = createBook('A');
       component.addBookToReadingList(book);
-
       expect(mockStore.dispatch).toHaveBeenCalledWith(addToReadingList({book}));
     });
 
