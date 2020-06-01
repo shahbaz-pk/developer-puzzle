@@ -5,7 +5,18 @@ import { SharedTestingModule, createBook } from '@tmo/shared/testing';
 import { BooksFeatureModule } from '../books-feature.module';
 import { BookSearchComponent } from './book-search.component';
 import {MockStore, provideMockStore} from "@ngrx/store/testing";
-import {getAllBooks, getBooksError, clearSearch, addToReadingList} from "@tmo/books/data-access";
+import {getAllBooks, getBooksError, removeFromReadingList, addToReadingList, clearSearch} from "@tmo/books/data-access";
+import { of } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+export class MatSnackBarMock {
+  public open() {
+    return {
+      onAction: () => of({})
+    }
+  }
+  public dismiss() {}
+}
 
 describe('ProductsListComponent', () => {
   let component: BookSearchComponent;
@@ -16,7 +27,7 @@ describe('ProductsListComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [BooksFeatureModule, NoopAnimationsModule, SharedTestingModule],
-      providers: [provideMockStore({ initialState: initialBooksState })]
+      providers: [provideMockStore({ initialState: initialBooksState }),{ provide: MatSnackBar, useClass: MatSnackBarMock }]
     }).compileComponents();
   }));
 
@@ -68,8 +79,18 @@ describe('ProductsListComponent', () => {
     it('should Add to reading list', () => {
       const book = createBook('A');
       component.addBookToReadingList(book);
-
       expect(mockStore.dispatch).toHaveBeenCalledWith(addToReadingList({book}));
+    });
+
+    it('should Undo the addition', () => {
+      component.searchForm.controls.term.setValue('javascript');
+      const book = createBook('A');
+      mockStore.overrideSelector(getAllBooks, [{...book, isAdded: true}]);
+      mockStore.refreshState();
+      expect(component.books.length).toBe(1);
+      component.undoBookAddition(book);
+      const item = { item: { bookId: book.id, ...book } };
+      expect(mockStore.dispatch).toHaveBeenCalledWith(removeFromReadingList(item));
     });
 
     it('should return undefined', () => {
