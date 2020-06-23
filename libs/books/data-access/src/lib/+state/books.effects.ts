@@ -21,7 +21,6 @@ export class BooksEffects {
         },
 
         onError: (action, error) => {
-          console.error('Error', error);
           return BooksActions.searchBooksFailure({ error });
         }
       })

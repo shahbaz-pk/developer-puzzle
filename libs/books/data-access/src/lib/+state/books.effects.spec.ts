@@ -30,8 +30,8 @@ describe('BooksEffects', () => {
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  describe('loadBooks$', () => {
-    it('should work', done => {
+  describe('Load books', () => {
+    it('should return the books successfully when searched with title' , done => {
       actions = new ReplaySubject();
       actions.next(BooksActions.searchBooks({ term: '' }));
 
@@ -43,6 +43,20 @@ describe('BooksEffects', () => {
       });
 
       httpMock.expectOne('/api/books/search?q=').flush([createBook('A')]);
+    });
+    it('should produce an error when search term is not valid', done => {
+      actions = new ReplaySubject();
+      actions.next(BooksActions.searchBooks({ term: '' }));
+      const res = BooksActions.searchBooksFailure(new ErrorEvent(""))
+
+      effects.searchBooks$.subscribe(action => {
+        expect(action.type).to.eql(
+          res.type
+        );
+        done();
+      });
+
+      httpMock.expectOne('/api/books/search?q=').error(new ErrorEvent(""));
     });
   });
 });
