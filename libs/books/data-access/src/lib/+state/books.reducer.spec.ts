@@ -4,7 +4,7 @@ import { createBook } from '@tmo/shared/testing';
 
 describe('Books Reducer', () => {
   describe('valid Books actions', () => {
-    it('loadBooksSuccess should return set the list of known Books', () => {
+    it('SearchBooksSuccess should return set the list of known Books', () => {
       const books = [createBook('A'), createBook('B'), createBook('C')];
       const action = BooksActions.searchBooksSuccess({ books });
 
@@ -13,7 +13,7 @@ describe('Books Reducer', () => {
       expect(result.loaded).toBe(true);
       expect(result.ids.length).toBe(3);
     });
-    it('loadBooksFailure should return set the empty list', () => {
+    it('SearchBooksFailure should return set the empty list', () => {
       const action = BooksActions.searchBooksFailure({ error: new Error()});
       const result: State = reducer(initialState, action);
 
