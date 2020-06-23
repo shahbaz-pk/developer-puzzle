@@ -4,7 +4,7 @@ import { SharedTestingModule, createReadingListItem } from '@tmo/shared/testing'
 import { ReadingListComponent } from './reading-list.component';
 import { BooksFeatureModule } from '@tmo/books/feature';
 import {MockStore, provideMockStore} from "@ngrx/store/testing";
-import {getReadingList, removeFromReadingList} from "@tmo/books/data-access";
+import {getReadingList, removeFromReadingList, markAsReadingComplete} from "@tmo/books/data-access";
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReadingListItem } from '@tmo/shared/models';
 
@@ -35,5 +35,11 @@ describe('ReadingListComponent', () => {
   it('should remove item from reading list', () => {
     component.removeFromReadingList(item);
     expect(mockStore.dispatch).toHaveBeenCalledWith(removeFromReadingList({item}));
+    expect(mockStore.dispatch).toHaveBeenCalled();
+  })
+
+  it('should Mark reading status of a book from reading list', () => {
+    component.markBookReadingStatus(item);
+    expect(mockStore.dispatch).toHaveBeenCalledWith(markAsReadingComplete({item}));
   })
 });

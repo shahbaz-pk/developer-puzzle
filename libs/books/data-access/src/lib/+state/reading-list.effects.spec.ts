@@ -4,7 +4,7 @@ import { ReplaySubject } from 'rxjs';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { DataPersistence, NxModule } from '@nrwl/angular';
-import { SharedTestingModule, createReadingListItem, createBook } from '@tmo/shared/testing';
+import { SharedTestingModule, createBook, createReadingListItem } from '@tmo/shared/testing';
 
 import { ReadingListEffects } from './reading-list.effects';
 import * as ReadingListActions from './reading-list.actions';
@@ -122,4 +122,36 @@ describe('ToReadEffects', () => {
       httpMock.expectOne('/api/reading-list/123').error(new ErrorEvent(""));
     });
   });
+
+  describe('markBookReadingStatus$', () => {
+    it('should mark the book status to reading completed in reading list', done => {
+      actions = new ReplaySubject();
+      const item: ReadingListItem = createReadingListItem("123");
+      actions.next(ReadingListActions.markAsReadingComplete({item}));
+
+      effects.markBookReadingStatus$.subscribe(action => {
+        expect(action).to.eql(
+          ReadingListActions.confirmedMarkAsReadingComplete({item})
+        );
+        done();
+      });
+
+      httpMock.expectOne('/api/reading-list/123/finished').flush([item]);
+    });
+    it('should provide error while marking the reading status of a book in reading list', done => {
+      actions = new ReplaySubject();
+      const item: ReadingListItem = createReadingListItem("123");
+      actions.next(ReadingListActions.markAsReadingComplete({item}));
+
+      effects.markBookReadingStatus$.subscribe(action => {
+        expect(action).to.eql(
+          ReadingListActions.failedMarkAsReadingComplete({ item })
+        );
+        done();
+      });
+
+      httpMock.expectOne('/api/reading-list/123/finished').error(new ErrorEvent(""));
+    });
+  });
+  
 });

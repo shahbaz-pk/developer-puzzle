@@ -71,8 +71,9 @@ describe('Books Search Component test', () => {
     it('should Add book to reading list', () => {
       const book = createBook('A');
       component.addBookToReadingList(book);
-
       expect(mockStore.dispatch).toHaveBeenCalledWith(addToReadingList({book}));
+    });
+
     });
 
     it('should return undefined', () => {
@@ -85,5 +86,4 @@ describe('Books Search Component test', () => {
       const result = component.formatDate('11-06-2020');
      expect(result).toEqual('11/6/2020');
     });
-  });
 });
