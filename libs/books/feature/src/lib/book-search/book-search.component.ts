@@ -10,7 +10,7 @@ import {
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'tmo-book-search',
@@ -18,12 +18,10 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./book-search.component.scss']
 })
 export class BookSearchComponent implements OnInit, OnDestroy {
-  books: ReadingListBook[];
   errorStatus: Boolean = false;
-
-  getAllBookSubscriber: Subscription;
-  getBooksErrorSubscriber: Subscription;
-
+  getBooksErrorSubscriber: Subscription; 
+  books$: Observable<ReadingListBook[]> = this.store.select(getAllBooks);
+  
   searchForm = this.fb.group({
     term: ''
   });
@@ -38,9 +36,6 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getAllBookSubscriber = this.store.select(getAllBooks).subscribe(books => {
-      this.books = books;
-    });
 
     this.getBooksErrorSubscriber = this.store.select(getBooksError).subscribe(errorInfo => {
       if (errorInfo) {
@@ -74,9 +69,6 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if(this.getAllBookSubscriber){
-      this.getAllBookSubscriber.unsubscribe();
-    }
     if(this.getBooksErrorSubscriber){
       this.getBooksErrorSubscriber.unsubscribe();
     }

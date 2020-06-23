@@ -32,7 +32,7 @@ describe('ToReadEffects', () => {
   });
 
   describe('loadReadingList$', () => {
-    it('should work', done => {
+    it('should load items in the reading list', done => {
       actions = new ReplaySubject();
       actions.next(ReadingListActions.loadReadingList());
 
@@ -45,7 +45,7 @@ describe('ToReadEffects', () => {
 
       httpMock.expectOne('/api/reading-list').flush([]);
     });
-    it('should through error', done => {
+    it('should produce an error while loading reading list items', done => {
       actions = new ReplaySubject();
       actions.next(ReadingListActions.loadReadingList());
 
@@ -62,7 +62,7 @@ describe('ToReadEffects', () => {
   });
 
   describe('addBook$', () => {
-    it('should work', done => {
+    it('should add the book to the reading list', done => {
       actions = new ReplaySubject();
       const book: Book = createBook("Abc");
       actions.next(ReadingListActions.addToReadingList({book}));
@@ -76,7 +76,7 @@ describe('ToReadEffects', () => {
 
       httpMock.expectOne('/api/reading-list').flush(book);
     });
-    it('should through error', done => {
+    it('should provide error while adding book to reading list', done => {
       actions = new ReplaySubject();
       const book: Book = createBook("Abc");
       actions.next(ReadingListActions.addToReadingList({book}));
@@ -93,7 +93,7 @@ describe('ToReadEffects', () => {
   });
 
   describe('removeBook$', () => {
-    it('should work', done => {
+    it('should remove the book from reading list', done => {
       actions = new ReplaySubject();
       const item: ReadingListItem = createReadingListItem("123");
       actions.next(ReadingListActions.removeFromReadingList({item}));
@@ -107,7 +107,7 @@ describe('ToReadEffects', () => {
 
       httpMock.expectOne('/api/reading-list/123').flush(item);
     });
-    it('should through error', done => {
+    it('should provide error while removing book from reading list', done => {
       actions = new ReplaySubject();
       const item: ReadingListItem = createReadingListItem("123");
       actions.next(ReadingListActions.removeFromReadingList({item}));
@@ -124,7 +124,7 @@ describe('ToReadEffects', () => {
   });
 
   describe('markBookReadingStatus$', () => {
-    it('should work', done => {
+    it('should mark the book status to reading completed in reading list', done => {
       actions = new ReplaySubject();
       const item: ReadingListItem = createReadingListItem("123");
       actions.next(ReadingListActions.markAsReadingComplete({item}));
@@ -138,7 +138,7 @@ describe('ToReadEffects', () => {
 
       httpMock.expectOne('/api/reading-list/123/finished').flush([item]);
     });
-    it('should through error', done => {
+    it('should provide error while marking the reading status of a book in reading list', done => {
       actions = new ReplaySubject();
       const item: ReadingListItem = createReadingListItem("123");
       actions.next(ReadingListActions.markAsReadingComplete({item}));

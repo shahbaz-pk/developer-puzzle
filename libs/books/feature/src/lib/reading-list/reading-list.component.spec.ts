@@ -32,17 +32,13 @@ describe('ReadingListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should remove from reading list', () => {
+  it('should remove item from reading list', () => {
     component.removeFromReadingList(item);
     expect(mockStore.dispatch).toHaveBeenCalledWith(removeFromReadingList({item}));
     expect(mockStore.dispatch).toHaveBeenCalled();
   })
 
-  it('should Mark reading status from reading list', () => {
+  it('should Mark reading status of a book from reading list', () => {
     component.markBookReadingStatus(item);
     expect(mockStore.dispatch).toHaveBeenCalledWith(markAsReadingComplete({item}));
   })
