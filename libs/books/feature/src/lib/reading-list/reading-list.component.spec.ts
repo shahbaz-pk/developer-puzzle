@@ -43,16 +43,12 @@ describe('ReadingListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should remove from reading list', () => {
+  it('should remove item from reading list', () => {
     component.removeFromReadingList(item);
     expect(mockStore.dispatch).toHaveBeenCalledWith(removeFromReadingList({item}));
   })
 
-  it('should Undo remove item from reading list', () => {
+  it('should Undo item removal from reading list', () => {
     const book = {id: item.bookId, ...item};
     component.undoItemRemoval(item);
     expect(mockStore.dispatch).toHaveBeenCalledWith(addToReadingList({book}));

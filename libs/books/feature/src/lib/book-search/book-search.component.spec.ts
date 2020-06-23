@@ -8,6 +8,7 @@ import {MockStore, provideMockStore} from "@ngrx/store/testing";
 import {getAllBooks, getBooksError, removeFromReadingList, addToReadingList, clearSearch} from "@tmo/books/data-access";
 import { of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { By } from '@angular/platform-browser';
 
 export class MatSnackBarMock {
   public open() {
@@ -18,7 +19,7 @@ export class MatSnackBarMock {
   public dismiss() {}
 }
 
-describe('ProductsListComponent', () => {
+describe('Books Search Component test', () => {
   let component: BookSearchComponent;
   let fixture: ComponentFixture<BookSearchComponent>;
   let mockStore: MockStore;
@@ -42,23 +43,25 @@ describe('ProductsListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('Search Books', () => {
-    it('Should load books on search query', () => {
+    it('Should load books after search', () => {
       component.searchForm.controls.term.setValue('javascript');
       mockStore.overrideSelector(getAllBooks, [{...createBook('A'), isAdded: false}]);
       mockStore.refreshState();
-      expect(component.books.length).toBe(1);
+      component.searchBooks();
+      fixture.detectChanges();
+      const elements = fixture.debugElement.queryAll(By.css('div.book--title'));
+      expect(elements.length).toBe(1);
     });
 
-    it('Should load books error on search query', () => {
+    it('When books search returns error', () => {
       component.searchForm.controls.term.setValue('javascript');
       mockStore.overrideSelector(getBooksError, "Internal Server error");
       mockStore.refreshState();
-      expect(component.books.length).toBe(0);
+      component.searchBooks();
+      fixture.detectChanges();
+      const elements = fixture.debugElement.queryAll(By.css('div.book--title'));
+      expect(elements.length).toBe(0);
       expect(component.errorStatus).toBe(true);
     });
 
@@ -76,18 +79,21 @@ describe('ProductsListComponent', () => {
       
     });
 
-    it('should Add to reading list', () => {
+    it('should Add book to reading list', () => {
       const book = createBook('A');
       component.addBookToReadingList(book);
       expect(mockStore.dispatch).toHaveBeenCalledWith(addToReadingList({book}));
     });
 
-    it('should Undo the addition', () => {
+    it('should Undo the addition of book into reading list', () => {
       component.searchForm.controls.term.setValue('javascript');
       const book = createBook('A');
       mockStore.overrideSelector(getAllBooks, [{...book, isAdded: true}]);
       mockStore.refreshState();
-      expect(component.books.length).toBe(1);
+      component.searchBooks();
+      fixture.detectChanges();
+      const elements = fixture.debugElement.queryAll(By.css('div.book--title'));
+      expect(elements.length).toBe(1);
       component.undoBookAddition(book);
       const item = { item: { bookId: book.id, ...book } };
       expect(mockStore.dispatch).toHaveBeenCalledWith(removeFromReadingList(item));
@@ -99,7 +105,7 @@ describe('ProductsListComponent', () => {
      
     });
 
-    it('should return date', () => {
+    it('should return date of format dd/MM/YYYY', () => {
       const result = component.formatDate('11-06-2020');
      expect(result).toEqual('11/6/2020');
     });
