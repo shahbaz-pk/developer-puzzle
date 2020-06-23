@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedTestingModule, createBook } from '@tmo/shared/testing';
 
@@ -71,7 +71,6 @@ describe('Books Search Component test', () => {
     it('should Add book to reading list', () => {
       const book = createBook('A');
       component.addBookToReadingList(book);
-
       expect(mockStore.dispatch).toHaveBeenCalledWith(addToReadingList({book}));
     });
 

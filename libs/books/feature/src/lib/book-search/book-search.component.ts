@@ -11,6 +11,7 @@ import {
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
 import { Subscription, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'tmo-book-search',
@@ -19,9 +20,9 @@ import { Subscription, Observable } from 'rxjs';
 })
 export class BookSearchComponent implements OnInit, OnDestroy {
   errorStatus: Boolean = false;
-  getBooksErrorSubscriber: Subscription; 
+  dynamicSubscriber: Subscription;
+  getBooksErrorSubscriber: Subscription;
   books$: Observable<ReadingListBook[]> = this.store.select(getAllBooks);
-  
   searchForm = this.fb.group({
     term: ''
   });
@@ -36,13 +37,17 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this.getBooksErrorSubscriber = this.store.select(getBooksError).subscribe(errorInfo => {
       if (errorInfo) {
         this.errorStatus = true;
         this.store.dispatch(clearSearch());
       }
     });
+
+  this.dynamicSubscriber = this.searchForm.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(val => { this.searchBooks(); })
   }
 
   formatDate(date: void | string) {
@@ -69,6 +74,9 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if(this.dynamicSubscriber){
+      this.dynamicSubscriber.unsubscribe();
+    }
     if(this.getBooksErrorSubscriber){
       this.getBooksErrorSubscriber.unsubscribe();
     }
