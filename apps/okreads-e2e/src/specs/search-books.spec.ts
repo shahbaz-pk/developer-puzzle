@@ -16,4 +16,5 @@ describe('When: Use the search feature', () => {
     const items = await $$('[data-testing="book-item"]');
     expect(items.length).to.be.greaterThan(1, 'At least one book');
   });
+
 });
